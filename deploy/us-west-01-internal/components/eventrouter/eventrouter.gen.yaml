@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eventrouter
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eventrouter
+  namespace: eventrouter
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: eventrouter
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - get
+  - watch
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eventrouter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eventrouter
+subjects:
+- kind: ServiceAccount
+  name: eventrouter
+  namespace: eventrouter
+---
+apiVersion: v1
+data:
+  config.json: |-
+    {
+      "sink": "stdout"
+    }
+kind: ConfigMap
+metadata:
+  name: eventrouter-cm
+  namespace: eventrouter
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: eventrouter
+  name: eventrouter
+  namespace: eventrouter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eventrouter
+  template:
+    metadata:
+      labels:
+        app: eventrouter
+    spec:
+      containers:
+      - env:
+        - name: GOMEMLIMIT
+          valueFrom:
+            resourceFieldRef:
+              divisor: "1"
+              resource: limits.memory
+        image: gcr.io/heptio-images/eventrouter:latest
+        imagePullPolicy: IfNotPresent
+        name: kube-eventrouter
+        resources:
+          limits:
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 2Gi
+        volumeMounts:
+        - mountPath: /etc/eventrouter
+          name: config-volume
+      serviceAccount: eventrouter
+      volumes:
+      - configMap:
+          name: eventrouter-cm
+        name: config-volume
