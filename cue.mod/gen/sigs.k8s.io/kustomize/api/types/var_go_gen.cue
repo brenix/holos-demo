@@ -30,7 +30,7 @@ package types
 // for Var.ObjRef
 #Target: {
 	apiVersion?: string @go(APIVersion)
-	name?:        string @go(Name)
+	name:        string @go(Name)
 	namespace?:  string @go(Namespace)
 }
 
