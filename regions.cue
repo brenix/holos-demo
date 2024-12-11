@@ -44,6 +44,8 @@ regions: #Regions & {
 					internal: {name: "us-east-02a-internal", scope: "internal", tier: "prod"}
 					mgmt: {name: "us-east-02a-mgmt", scope: "mgmt", tier: "prod"}
 					customer: {name: "us-east-02a-customer", scope: "customer", tier: "prod"}
+					customer2: {name: "us-east-02a-customer2", scope: "customer", tier: "prod"}
+					customer3: {name: "us-east-02a-customer3", scope: "customer", tier: "prod"}
 				}
 			}
 		}

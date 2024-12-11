@@ -35,9 +35,6 @@ package core
 
 	// Spec specifies the desired state of the resource.
 	spec: #BuildPlanSpec @go(Spec)
-
-	// Source reflects the origin of the BuildPlan.
-	source?: #BuildPlanSource @go(Source)
 }
 
 // BuildPlanSpec represents the specification of the [BuildPlan].
@@ -47,14 +44,6 @@ package core
 
 	// Disabled causes the holos cli to disregard the build plan.
 	disabled?: bool @go(Disabled)
-}
-
-// BuildPlanSource reflects the origin of a [BuildPlan].  Useful to save a build
-// plan to a file, then re-generate it without needing to process a [Platform]
-// component collection.
-#BuildPlanSource: {
-	// Component reflects the component that produced the build plan.
-	component?: #Component @go(Component)
 }
 
 // Artifact represents one fully rendered manifest produced by a [Transformer]
@@ -81,6 +70,7 @@ package core
 	artifact?: #FilePath @go(Artifact)
 	generators?: [...#Generator] @go(Generators,[]Generator)
 	transformers?: [...#Transformer] @go(Transformers,[]Transformer)
+	validators?: [...#Validator] @go(Validators,[]Validator)
 	skip?: bool @go(Skip)
 }
 
@@ -174,9 +164,26 @@ package core
 }
 
 // Repository represents a [Helm] [Chart] repository.
+//
+// The Auth field is useful to configure http basic authentication to the Helm
+// repository.  Holos gets the username and password from the environment
+// variables represented by the Auth field.
 #Repository: {
-	name: string @go(Name)
-	url:  string @go(URL)
+	name:  string @go(Name)
+	url:   string @go(URL)
+	auth?: #Auth  @go(Auth)
+}
+
+// Auth represents environment variable names containing auth credentials.
+#Auth: {
+	username: #AuthSource @go(Username)
+	password: #AuthSource @go(Password)
+}
+
+// AuthSource represents a source for the value of an [Auth] field.
+#AuthSource: {
+	value?:   string @go(Value)
+	fromEnv?: string @go(FromEnv)
 }
 
 // Transformer combines multiple inputs from prior [Generator] or [Transformer]
@@ -214,7 +221,7 @@ package core
 //
 // [bytes.Join]: https://pkg.go.dev/bytes#Join
 #Join: {
-	separator: string & (string | *"---\n") @go(Separator)
+	separator?: string @go(Separator)
 }
 
 // Kustomize represents a kustomization [Transformer].
@@ -232,14 +239,38 @@ package core
 // is expected to happen in CUE against the kubectl version the user prefers.
 #Kustomization: {...}
 
-// FileContent represents file contents.
-#FileContent: string
-
 // FileContentMap represents a mapping of file paths to file contents.
 #FileContentMap: {[string]: #FileContent}
 
 // FilePath represents a file path.
 #FilePath: string
+
+// FileContent represents file contents.
+#FileContent: string
+
+// Validator validates files.  Useful to validate an [Artifact] prior to writing
+// it out to the final destination.  Holos may execute validators concurrently.
+// See the [validators] tutorial for an end to end example.
+//
+// [validators]: https://holos.run/docs/v1alpha5/tutorial/validators/
+#Validator: {
+	// Kind represents the kind of transformer. Must be Kustomize, or Join.
+	kind: string & "Command" @go(Kind)
+
+	// Inputs represents the files to validate.  Usually the final Artifact.
+	inputs: [...#FilePath] @go(Inputs,[]FilePath)
+
+	// Command represents a validation command.  Ignored unless kind is Command.
+	command?: #Command @go(Command)
+}
+
+// Command represents a command vetting one or more artifacts.  Holos appends
+// fully qualified input file paths to the end of the args list, then executes
+// the command.  Inputs are written into a temporary directory prior to
+// executing the command and removed afterwards.
+#Command: {
+	args?: [...string] @go(Args,[]string)
+}
 
 // InternalLabel is an arbitrary unique identifier internal to holos itself.
 // The holos cli is expected to never write a InternalLabel value to rendered
@@ -254,6 +285,14 @@ package core
 #Metadata: {
 	// Name represents the resource name.
 	name: string @go(Name)
+
+	// Labels represents a resource selector.
+	labels?: {[string]: string} @go(Labels,map[string]string)
+
+	// Annotations represents arbitrary non-identifying metadata.  For example
+	// holos uses the `cli.holos.run/description` annotation to log resources in a
+	// user customized way.
+	annotations?: {[string]: string} @go(Annotations,map[string]string)
 }
 
 // Platform represents a platform to manage.  A Platform specifies a [Component]
@@ -305,4 +344,12 @@ package core
 	// Holos Authors.  Multiple environments are a prime example of an input
 	// parameter that should always be user defined, never defined by Holos.
 	parameters?: {[string]: string} @go(Parameters,map[string]string)
+
+	// Labels represent selector labels for the component.  Copied to the
+	// resulting BuildPlan.
+	labels?: {[string]: string} @go(Labels,map[string]string)
+
+	// Annotations represents arbitrary non-identifying metadata.  Use the
+	// `cli.holos.run/description` to customize the log message of each BuildPlan.
+	annotations?: {[string]: string} @go(Annotations,map[string]string)
 }
