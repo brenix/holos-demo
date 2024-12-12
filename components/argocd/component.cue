@@ -8,7 +8,7 @@ Component: #Helm & {
 	Name:      "argocd"
 	Namespace: "argocd"
 	Chart: {
-		name: "argo-cd"
+		name:    "argo-cd"
 		version: "7.6.1"
 		repository: {
 			name: "argocd"
@@ -34,7 +34,14 @@ Component: #Helm & {
 				path:  "/metadata/annotations/argocd.argoproj.io~1sync-options"
 				value: "Delete=false"
 			}])
-		}
+		},
 	]
-}
 
+	// Use Case: Chart-level defaults
+	//
+	// Setting something such as a common affinity or tolerations that all
+	// deployments of the chart will use by default (but can be overwritten as
+	// needed)
+	// https://github.com/brenix/holos-demo/issues/2
+	Values: ValuesByChart[Chart.name].Values
+}
