@@ -45,9 +45,16 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 		// For readability, lots of things have a name.
 		let PROJECT = Name
 
+		// Compose components coming from multiple structures into one.  This is an
+		// example of struct embedding.
+		let COMPONENTS = {
+			ComponentsOnAllClusters
+			ComponentsByScopes[CLUSTER.scope].components
+		}
+
 		// Look up the components associated with the cluster scope, and compose
 		// them into the project, which will then roll up to the platform.
-		for COMPONENT in ComponentsByScopes[CLUSTER.scope].components {
+		for COMPONENT in COMPONENTS {
 			// We have to construct an arbitrary but unique field name in the next
 			// statement, otherwise we won't be able to easily unify this Components
 			// structure with other structures.  We want to roll this Components up into
@@ -63,7 +70,11 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 
 				// Write to the cluster specific path.
 				let BASE_DIR = "clusters/\(CLUSTER.name)/projects/\(PROJECT)"
+
 				parameters: outputBaseDir: BASE_DIR
+				// For the cluster-scope-values Values based on a given cluster scope
+				// use case.
+				parameters: ClusterScope: CLUSTER.scope
 
 				let DESCRIPTION = "\(name) for project \(PROJECT) on cluster \(CLUSTER.name)"
 				annotations: "app.holos.run/description": DESCRIPTION
@@ -97,6 +108,6 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 #ComponentsByScopes: [SCOPE=string]: #ComponentsByScope & {scope: SCOPE}
 
 #ComponentsByScope: {
-	scope:      "internal" | "mgmt" | "customer"
+	scope:      #Cluster.#Scope
 	components: #Components
 }

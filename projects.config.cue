@@ -35,3 +35,12 @@ ComponentsByScopes: #ComponentsByScopes & {
 	internal: {}
 	customer: {}
 }
+
+// ComponentsOnAllClusters represents components components composed into all
+// clusters.
+ComponentsOnAllClusters: #Components & {
+	ClusterScopeValues: {
+		name: "cluster-scope-values"
+		path: "components/cluster-scope-values"
+	}
+}

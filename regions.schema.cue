@@ -4,10 +4,15 @@ package holos
 #Cluster: {
 	// name represents the cluster name
 	name: string
+
 	// scope represents the clusters scope
-	scope: "internal" | "mgmt" | "customer"
+	scope: #Scope
 	// stage represents the clusters lifecycle stage
-	stage: "prod" | "dev" | "test" | "nonprod"
+	stage: #Stage
+
+	// Definitions for use elsewhere in the configuration as #Cluster.#Scope
+	#Scope: "internal" | "mgmt" | "customer"
+	#Stage: "prod" | "dev" | "test" | "nonprod"
 }
 
 // #Zone represents an availability zone within a region

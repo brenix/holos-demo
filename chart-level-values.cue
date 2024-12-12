@@ -15,12 +15,13 @@ package holos
 #ChartName: string
 
 // We leave the struct open because values can take anything.  We can tighten it
-// up on a chart by chart basis.
+// up on a chart by chart basis by importing the default values.yaml.  See:
+// https://holos.run/docs/v1alpha5/tutorial/helm-values/#importing-helm-values
 #ValuesByChart: [#ChartName]: Values: {...}
 
 // Component definitions will look up values in this struct by their chart name,
 // composing them into the build plan.
-ValuesByChart: {
+ValuesByChart: #ValuesByChart & {
 	"argo-cd": Values: {
 		global: {
 			affinity: nodeAffinity: {}
