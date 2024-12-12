@@ -43,5 +43,5 @@ Component: #Helm & {
 	// deployments of the chart will use by default (but can be overwritten as
 	// needed)
 	// https://github.com/brenix/holos-demo/issues/2
-	Values: ValuesByChart[Chart.name].Values
+	Values: #Values & ValuesByChart[Chart.name].Values
 }

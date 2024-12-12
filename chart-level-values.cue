@@ -22,11 +22,13 @@ package holos
 // composing them into the build plan.
 ValuesByChart: {
 	"argo-cd": Values: {
-		affinity: nodeAffinity: {}
-		tolerations: [{
-			key:      "foo"
-			operator: "Equal"
-			value:    "bar"
-		}]
+		global: {
+			affinity: nodeAffinity: {}
+			tolerations: [{
+				key:      "foo"
+				operator: "Equal"
+				value:    "bar"
+			}]
+		}
 	}
 }
