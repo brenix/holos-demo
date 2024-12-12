@@ -34,8 +34,8 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 	// the config around to us.
 	//
 	// Kind of a fancy way of saying they're lookup keys...
-	Region: string | *"dev1"
-	Zone:   string | *"dev1a"
+	Region: string
+	Zone:   string
 
 	Components: #Components
 
@@ -86,7 +86,7 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 
 // #Projects defines a collection of projects, useful to roll them up to the
 // Platform spec.
-#Projects: [NAME=string]: #Project & {name: NAME}
+#Projects: [string]: #Project
 
 // #Components represents a collection of components, useful to assign them to a
 // cluster.
