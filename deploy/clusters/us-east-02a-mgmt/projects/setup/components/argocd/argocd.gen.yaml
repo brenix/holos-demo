@@ -22004,6 +22004,10 @@ spec:
       dnsPolicy: ClusterFirst
       serviceAccountName: argocd-applicationset-controller
       terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: foo
+        operator: Equal
+        value: bar
       volumes:
       - configMap:
           name: argocd-ssh-known-hosts-cm
@@ -22144,6 +22148,10 @@ spec:
           name: dexconfig
       serviceAccountName: argocd-dex-server
       terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: foo
+        operator: Equal
+        value: bar
       volumes:
       - emptyDir: {}
         name: static-files
@@ -22264,6 +22272,10 @@ spec:
       dnsPolicy: ClusterFirst
       serviceAccountName: argocd-notifications-controller
       terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: foo
+        operator: Equal
+        value: bar
       volumes:
       - configMap:
           name: argocd-tls-certs-cm
@@ -22358,6 +22370,10 @@ spec:
           type: RuntimeDefault
       serviceAccountName: default
       terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: foo
+        operator: Equal
+        value: bar
       volumes:
       - configMap:
           defaultMode: 493
@@ -22705,6 +22721,10 @@ spec:
           name: var-files
       serviceAccountName: argo-cd-argocd-repo-server
       terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: foo
+        operator: Equal
+        value: bar
       volumes:
       - emptyDir: {}
         name: helm-working-dir
@@ -23102,6 +23122,10 @@ spec:
       dnsPolicy: ClusterFirst
       serviceAccountName: argocd-server
       terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: foo
+        operator: Equal
+        value: bar
       volumes:
       - emptyDir: {}
         name: plugins-home
@@ -23430,6 +23454,10 @@ spec:
       dnsPolicy: ClusterFirst
       serviceAccountName: argocd-application-controller
       terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: foo
+        operator: Equal
+        value: bar
       volumes:
       - emptyDir: {}
         name: argocd-home

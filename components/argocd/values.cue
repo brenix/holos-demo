@@ -1,5 +1,7 @@
 package holos
 
+import core "k8s.io/api/core/v1"
+
 #Values: {
 	//# Argo CD configuration
 	//# Ref: https://github.com/argoproj/argo-cd
@@ -129,16 +131,16 @@ package holos
 		nodeSelector: {}
 
 		// -- Default tolerations for all components
-		tolerations: []
+		tolerations: [...core.#Toleration]
 
 		// Default affinity preset for all components
 		affinity: {
 			// -- Default pod anti-affinity rules. Either: `none`, `soft` or `hard`
-			podAntiAffinity: "soft"
+			podAntiAffinity: "none" | *"soft" | "hard"
 			// Node affinity rules
 			nodeAffinity: {
 				// -- Default node affinity rules. Either: `none`, `soft` or `hard`
-				type: "hard"
+				type: "none" | "soft" | *"hard"
 				// -- Default match expressions for node affinity
 				// - key: topology.kubernetes.io/zone
 				//   operator: In
