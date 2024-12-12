@@ -23,7 +23,7 @@ package holos
 	// name represents the name of the region
 	name: string
 	// clusters represents a set of zones within the region
-	zones: [string]: #Zone
+	zones: [NAME=string]: #Zone & {name: NAME}
 }
 
 // #Regions represents a set of regions
