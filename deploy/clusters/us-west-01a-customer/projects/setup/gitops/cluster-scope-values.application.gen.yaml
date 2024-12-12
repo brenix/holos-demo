@@ -1,0 +1,13 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+    name: cluster-scope-values
+    namespace: argocd
+spec:
+    destination:
+        server: https://kubernetes.default.svc
+    project: default
+    source:
+        path: deploy/clusters/us-west-01a-customer/projects/setup/components/cluster-scope-values
+        repoURL: https://github.com/brenix/holos-demo.git
+        targetRevision: main
