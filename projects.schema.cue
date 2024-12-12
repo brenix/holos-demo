@@ -45,21 +45,30 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 		// For readability, lots of things have a name.
 		let PROJECT = Name
 
-		// We have to construct an arbitrary but unique field name in the next
-		// statement, otherwise we won't be able to easily unify this Components
-		// structure with other structures.  We want to roll this Components up into
-		// Platform.Components, but first we need to roll it into
-		// Project.components.
-		//
-		// Side note: the inconsistent looking, but consistently alternating,
-		// capitalization in the previous sentence is to easily reference these
-		// fields as we alternate rolling these structures up into the Platform.  I
-		// hate it.  It saves a let variable though, which is worth it I guess?
-		Components: "project:\(PROJECT):cluster:\(CLUSTER.name):component:argocd": {
-			name: "argocd"
-			path: "components/argocd"
+		// Look up the components associated with the cluster scope, and compose
+		// them into the project, which will then roll up to the platform.
+		for COMPONENT in ComponentsByScopes[CLUSTER.scope].components {
+			// We have to construct an arbitrary but unique field name in the next
+			// statement, otherwise we won't be able to easily unify this Components
+			// structure with other structures.  We want to roll this Components up into
+			// Platform.Components, but first we need to roll it into
+			// Project.components.
+			let PREFIX = "project:\(PROJECT):cluster:\(CLUSTER.name)"
+
+			// Mix the component into the project for the specific cluster.
+			Components: "\(PREFIX):component:\(COMPONENT.name)": COMPONENT & {
+				// repeated here so we can refer to the field in this scope.
+				name: string
+				labels: "app.holos.run/name": name
+
+				// Write to the cluster specific path.
+				let BASE_DIR = "clusters/\(CLUSTER.name)/projects/\(PROJECT)"
+				parameters: outputBaseDir: BASE_DIR
+
+				let DESCRIPTION = "\(name) for project \(PROJECT) on cluster \(CLUSTER.name)"
+				annotations: "app.holos.run/description": DESCRIPTION
+			}
 		}
-		// NOTE: We would repeat the above for each component in this project.
 	}
 
 	Project: #Project & {
@@ -82,3 +91,12 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 // #Components represents a collection of components, useful to assign them to a
 // cluster.
 #Components: [string]: core.#Component
+
+// #ComponentsByScopes composes components cluster scope.  Useful to compose
+// components into a cluster given the cluster's scope as a lookup key.
+#ComponentsByScopes: [SCOPE=string]: #ComponentsByScope & {scope: SCOPE}
+
+#ComponentsByScope: {
+	scope:      "internal" | "mgmt" | "customer"
+	components: #Components
+}
