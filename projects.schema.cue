@@ -2,8 +2,7 @@ package holos
 
 import "github.com/holos-run/holos/api/core/v1alpha5:core"
 
-// #Project defines a structure to model the infrastructure and helm values
-// across clusters within it.
+// #ProjectBuilder builds #Project data from field values.
 //
 // The Holos Authors (Jeff mostly, but he's been talking with Gary and Nate
 // about this for years now and they don't seem to object) thinks of a Project
@@ -26,18 +25,59 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 // With all that said, here's an attempt to define a project in the context of
 // your organization / business.  It binds varying components to clusters,
 // oriented to the aspects important to you.
+#ProjectBuilder: {
+	Name: string | *"default"
+	// These are aspects we (you) care about.  They're used kind of like function
+	// parameters where the Project field is the return value.  They function to
+	// manipulate and orient segments of the platform configuration structure
+	// toward us, at least that's how I see it in my mind.  Orienting aspects of
+	// the config around to us.
+	//
+	// Kind of a fancy way of saying they're lookup keys...
+	Region: string | *"dev1"
+	Zone:   string | *"dev1a"
+
+	Components: #Components
+
+	// Assign the podinfo component to the clusters in the provided Region and
+	// Zone.
+	for CLUSTER in regions[Region].zones[Zone].clusters {
+		// For readability, lots of things have a name.
+		let PROJECT = Name
+
+		// We have to construct an arbitrary but unique field name in the next
+		// statement, otherwise we won't be able to easily unify this Components
+		// structure with other structures.  We want to roll this Components up into
+		// Platform.Components, but first we need to roll it into
+		// Project.components.
+		//
+		// Side note: the inconsistent looking, but consistently alternating,
+		// capitalization in the previous sentence is to easily reference these
+		// fields as we alternate rolling these structures up into the Platform.  I
+		// hate it.  It saves a let variable though, which is worth it I guess?
+		Components: "project:\(PROJECT):cluster:\(CLUSTER.name):component:argocd": {
+			name: "argocd"
+			path: "components/argocd"
+		}
+		// NOTE: We would repeat the above for each component in this project.
+	}
+
+	Project: #Project & {
+		name:       Name
+		components: Components
+	}
+}
+
+// #Project defines a structure to model the infrastructure and helm values
+// across clusters within it.
 #Project: {
 	name:       string
-	clusters:   #Clusters
 	components: #Components
 }
 
 // #Projects defines a collection of projects, useful to roll them up to the
 // Platform spec.
 #Projects: [NAME=string]: #Project & {name: NAME}
-
-// #Clusters represents a collection of clusters.
-#Clusters: [NAME=string]: #Cluster & {name: NAME}
 
 // #Components represents a collection of components, useful to assign them to a
 // cluster.
