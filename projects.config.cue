@@ -43,4 +43,8 @@ ComponentsOnAllClusters: #Components & {
 		name: "cluster-scope-values"
 		path: "components/cluster-scope-values"
 	}
+	ClusterStageValues: {
+		name: "cluster-stage-values"
+		path: "components/cluster-stage-values"
+	}
 }

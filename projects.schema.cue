@@ -71,10 +71,13 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 				// Write to the cluster specific path.
 				let BASE_DIR = "clusters/\(CLUSTER.name)/projects/\(PROJECT)"
 
-				parameters: outputBaseDir: BASE_DIR
-				// For the cluster-scope-values Values based on a given cluster scope
-				// use case.
-				parameters: ClusterScope: CLUSTER.scope
+				parameters: {
+					outputBaseDir: BASE_DIR
+					// For the Values based on a given cluster scope use case.
+					ClusterScope: CLUSTER.scope
+					// For the Values based on a given cluster stage use case.
+					ClusterStage: CLUSTER.stage
+				}
 
 				let DESCRIPTION = "\(name) for project \(PROJECT) on cluster \(CLUSTER.name)"
 				annotations: "app.holos.run/description": DESCRIPTION
