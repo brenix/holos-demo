@@ -26,7 +26,7 @@ ValuesByClusterStage: #ValuesByClusterStage & {
 
 	prod: Values: replicas:    3
 	nonprod: Values: replicas: 1
-	// Also harder to read, but unifies the value.
+	// May be harder to read, but unifies the value.
 	dev: Values: replicas:  nonprod.Values.replicas
 	test: Values: replicas: nonprod.Values.replicas
 

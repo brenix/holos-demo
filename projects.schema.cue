@@ -77,6 +77,8 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 					ClusterScope: CLUSTER.scope
 					// For the Values based on a given cluster stage use case.
 					ClusterStage: CLUSTER.stage
+					// Specific Cluster use case
+					ClusterName: CLUSTER.name
 				}
 
 				let DESCRIPTION = "\(name) for project \(PROJECT) on cluster \(CLUSTER.name)"

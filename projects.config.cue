@@ -47,4 +47,8 @@ ComponentsOnAllClusters: #Components & {
 		name: "cluster-stage-values"
 		path: "components/cluster-stage-values"
 	}
+	ClusterSpecificValues: {
+		name: "cluster-specific-values"
+		path: "components/cluster-specific-values"
+	}
 }

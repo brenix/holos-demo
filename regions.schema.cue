@@ -3,7 +3,7 @@ package holos
 // #Cluster represents one cluster
 #Cluster: {
 	// name represents the cluster name
-	name: string
+	name: #Name
 
 	// scope represents the clusters scope
 	scope: #Scope
@@ -13,6 +13,10 @@ package holos
 	// Definitions for use elsewhere in the configuration as #Cluster.#Scope
 	#Scope: "internal" | "mgmt" | "customer"
 	#Stage: "prod" | "dev" | "test" | "nonprod"
+
+	// You could constrain this definition to match your cluster naming
+	// convention, but might be getting way too fancy / clever.
+	#Name: string
 }
 
 // #Zone represents an availability zone within a region
