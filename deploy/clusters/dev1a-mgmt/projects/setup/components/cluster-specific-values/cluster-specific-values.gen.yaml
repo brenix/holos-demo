@@ -10,8 +10,25 @@ data:
     dopplerConfig: dev
 kind: ConfigMap
 metadata:
+  annotations:
+    example.com/scenario: Modeling the infrastructure and helm values across clusters
+      within it
+    example.com/use-case: Values for a specific cluster
   labels:
     example.com/cluster.name: dev1a-mgmt
     example.com/cluster.scope: mgmt
     example.com/cluster.stage: dev
   name: cluster-specific-values
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  annotations:
+    jeff.holos.run/description: This resource should be knocked out of the manifests
+      for clusters us-west-01a-customer and us-east-02a-customer
+  labels:
+    example.com/cluster.name: dev1a-mgmt
+    example.com/cluster.stage: dev
+  name: secret-that-is-not-needed
+  namespace: kube-system
+spec: {}
