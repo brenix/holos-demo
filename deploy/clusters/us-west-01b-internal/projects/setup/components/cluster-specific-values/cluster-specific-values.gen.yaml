@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  ClusterValues: |
+    {}
+  ScopeValues: |
+    policies:
+      mutateLBTrafficPolicy: false
+  StageValues: |
+    replicas: 3
+    dopplerConfig: prod
+kind: ConfigMap
+metadata:
+  labels:
+    example.com/cluster.name: us-west-01b-internal
+    example.com/cluster.scope: internal
+    example.com/cluster.stage: prod
+  name: cluster-specific-values

@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  ClusterValues: |
+    {}
+  ScopeValues: |
+    policies:
+      mutateLBTrafficPolicy: true
+  StageValues: |
+    replicas: 1
+    dopplerConfig: dev
+kind: ConfigMap
+metadata:
+  labels:
+    example.com/cluster.name: dev1a-customer
+    example.com/cluster.scope: customer
+    example.com/cluster.stage: dev
+  name: cluster-specific-values

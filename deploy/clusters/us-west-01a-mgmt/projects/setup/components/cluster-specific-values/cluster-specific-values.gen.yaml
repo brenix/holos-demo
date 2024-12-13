@@ -1,0 +1,21 @@
+apiVersion: v1
+data:
+  ClusterValues: |
+    networkAllocations:
+      podCIDRs:
+        - 172.26.16.0/20
+      serviceCIDRs:
+        - 172.26.66.0/23
+  ScopeValues: |
+    policies:
+      mutateLBTrafficPolicy: true
+  StageValues: |
+    replicas: 3
+    dopplerConfig: prod
+kind: ConfigMap
+metadata:
+  labels:
+    example.com/cluster.name: us-west-01a-mgmt
+    example.com/cluster.scope: mgmt
+    example.com/cluster.stage: prod
+  name: cluster-specific-values
