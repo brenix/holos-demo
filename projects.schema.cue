@@ -50,6 +50,12 @@ import "github.com/holos-run/holos/api/core/v1alpha5:core"
 		let COMPONENTS = {
 			ComponentsOnAllClusters
 			ComponentsByScopes[CLUSTER.scope].components
+
+			// Scenario 3
+			// If the field is defined, then embed the cluster specific components.
+			if ComponentsByClusters[CLUSTER.name] != _|_ {
+				ComponentsByClusters[CLUSTER.name].components
+			}
 		}
 
 		// Look up the components associated with the cluster scope, and compose
