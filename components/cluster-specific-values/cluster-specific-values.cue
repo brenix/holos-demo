@@ -6,9 +6,9 @@ holos: Component.BuildPlan
 
 _Patches: {}
 // Guard check, _|_ represents error, called bottom in the language of cue.
-// if PatchesByCluster[ClusterName] != _|_ {
-// 	_Patches: PatchesByCluster[ClusterName].Patches
-// }
+if PatchesByCluster[ClusterName] != _|_ {
+	_Patches: PatchesByCluster[ClusterName].Patches
+}
 
 // Manage a plain ConfigMap as a way to show how values can be passed through
 // the system.
