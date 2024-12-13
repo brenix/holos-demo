@@ -1,0 +1,135 @@
+apiVersion: v1
+data:
+  message: Some clusters may or may not need a particular component deployed to them.
+    In some cases, we also have to pin a specific version of the chart for the given
+    cluster.
+kind: ConfigMap
+metadata:
+  annotations:
+    example.com/scenario: 3 - Excluding or pinning components on a per-environment
+      basis
+    example.com/use-case: Values for a specific cluster
+    jeff.holos.run/description: Version 6.6.0 should be deployed on cluster us-west-01a-customer,
+      version 6.6.1 on us-east-02a-customer.  Should not be deployed on any other
+      cluster.  THe default version is 6.6.2.
+  labels:
+    example.com/chart.version: 6.6.0
+    example.com/cluster.name: us-west-01a-customer
+    example.com/cluster.scope: customer
+    example.com/cluster.stage: prod
+  name: cluster-specific-values
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: podinfo
+    app.kubernetes.io/version: 6.6.0
+    helm.sh/chart: podinfo-6.6.0
+  name: podinfo
+spec:
+  ports:
+  - name: http
+    port: 9898
+    protocol: TCP
+    targetPort: http
+  - name: grpc
+    port: 9999
+    protocol: TCP
+    targetPort: grpc
+  selector:
+    app.kubernetes.io/name: podinfo
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: podinfo
+    app.kubernetes.io/version: 6.6.0
+    helm.sh/chart: podinfo-6.6.0
+  name: podinfo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: podinfo
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/port: "9898"
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: podinfo
+    spec:
+      containers:
+      - command:
+        - ./podinfo
+        - --port=9898
+        - --cert-path=/data/cert
+        - --port-metrics=9797
+        - --grpc-port=9999
+        - --grpc-service-name=podinfo
+        - --level=info
+        - --random-delay=false
+        - --random-error=false
+        env:
+        - name: PODINFO_UI_MESSAGE
+          value: Hello World
+        - name: PODINFO_UI_COLOR
+          value: '#34577c'
+        image: ghcr.io/stefanprodan/podinfo:6.6.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - podcli
+            - check
+            - http
+            - localhost:9898/healthz
+          failureThreshold: 3
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: podinfo
+        ports:
+        - containerPort: 9898
+          name: http
+          protocol: TCP
+        - containerPort: 9797
+          name: http-metrics
+          protocol: TCP
+        - containerPort: 9999
+          name: grpc
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - podcli
+            - check
+            - http
+            - localhost:9898/readyz
+          failureThreshold: 3
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits: null
+          requests:
+            cpu: 1m
+            memory: 16Mi
+        volumeMounts:
+        - mountPath: /data
+          name: data
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - emptyDir: {}
+        name: data
