@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+  ClusterValues: |
+    networkAllocations:
+      podCIDRs:
+        - 172.26.16.0/20
+      serviceCIDRs:
+        - 172.26.66.0/23
+  ScopeValues: |
+    policies:
+      mutateLBTrafficPolicy: true
+  StageValues: |
+    replicas: 3
+    dopplerConfig: prod
+kind: ConfigMap
+metadata:
+  annotations:
+    example.com/scenario: Modeling the infrastructure and helm values across clusters
+      within it
+    example.com/use-case: Values for a specific cluster
+  labels:
+    example.com/cluster.name: us-west-01a-mgmt
+    example.com/cluster.scope: mgmt
+    example.com/cluster.stage: prod
+  name: cluster-specific-values
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  annotations:
+    jeff.holos.run/description: This resource should be knocked out of the manifests
+      for clusters us-west-01a-customer and us-east-02a-customer
+  labels:
+    example.com/cluster.name: us-west-01a-mgmt
+    example.com/cluster.stage: prod
+  name: secret-that-is-not-needed
+  namespace: kube-system
+spec: {}

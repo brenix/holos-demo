@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  values: |
+    policies:
+      mutateLBTrafficPolicy: true
+kind: ConfigMap
+metadata:
+  labels:
+    example.com/cluster.scope: mgmt
+  name: foo

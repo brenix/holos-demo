@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  values: |
+    replicas: 1
+    dopplerConfig: dev
+kind: ConfigMap
+metadata:
+  labels:
+    example.com/cluster.scope: customer
+    example.com/cluster.stage: dev
+  name: values-by-cluster-stage

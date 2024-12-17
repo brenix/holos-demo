@@ -3,11 +3,20 @@ package holos
 // #Cluster represents one cluster
 #Cluster: {
 	// name represents the cluster name
-	name: string
+	name: #Name
+
 	// scope represents the clusters scope
-	scope: "internal" | "mgmt" | "customer"
+	scope: #Scope
 	// stage represents the clusters lifecycle stage
-	stage: "prod" | "dev" | "test" | "nonprod"
+	stage: #Stage
+
+	// Definitions for use elsewhere in the configuration as #Cluster.#Scope
+	#Scope: "internal" | "mgmt" | "customer"
+	#Stage: "prod" | "dev" | "test" | "nonprod"
+
+	// You could constrain this definition to match your cluster naming
+	// convention, but might be getting way too fancy / clever.
+	#Name: string
 }
 
 // #Zone represents an availability zone within a region
@@ -23,7 +32,7 @@ package holos
 	// name represents the name of the region
 	name: string
 	// clusters represents a set of zones within the region
-	zones: [string]: #Zone
+	zones: [NAME=string]: #Zone & {name: NAME}
 }
 
 // #Regions represents a set of regions
